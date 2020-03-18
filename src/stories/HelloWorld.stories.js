@@ -1,7 +1,10 @@
+import StoryRouter from "storybook-vue-router";
+
 import HelloWorld from "./../components/HelloWorld";
 
 export default {
-  title: "Hello World"
+  title: "Hello World",
+  decorators: [StoryRouter({})]
 };
 
 export const withDefault = () => ({
