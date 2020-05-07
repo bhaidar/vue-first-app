@@ -1,79 +1,87 @@
 <template>
-    <article>
-        <h2>Form Validation</h2>
-        <form @submit.prevent="save" novalidate="true" class="form">
-            <div v-show="errors.length">
-                <b>Please correct the following error(s):</b>
-                <ul>
-                    <li v-for="(error, index) in errors" :key="index">{{ error }}</li>
-                </ul>
-            </div>
+  <article>
+    <h2>Form Validation</h2>
+    <form @submit.prevent="handleSubmit" novalidate="true" class="form">
+      <div class="field">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" v-model="name" />
+        <div v-if="submitted && !$v.name.required" class="invalid-feedback">
+          Name is required
+        </div>
+      </div>
 
-            <p>
-                <label for="name">Name</label>
-                <input type="text" name="name" id="name" v-model="name" />
-            </p>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" v-model="email" />
+        <div v-if="submitted && !$v.email.required" class="invalid-feedback">
+          Email is required
+        </div>
+        <div v-if="submitted && !$v.email.email" class="invalid-feedback">
+          Email is invalid
+        </div>
+      </div>
 
-            <p>
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" v-model="email" />
-            </p>
+      <div class="field">
+        <label for="framework">Framework</label>
+        <select
+          name="framework"
+          id="framework"
+          aria-label="Select a Framework"
+          v-model="framework"
+        >
+          <option value="null" selected>Select a Framework</option>
+          <option value="1">Angular</option>
+          <option value="2">React</option>
+          <option value="3">Svelte</option>
+          <option value="4">Vue</option>
+        </select>
+      </div>
 
-            <p>
-                <label for="framework">Framework</label>
-                <select
-                        name="framework"
-                        id="framework"
-                        aria-label="Select a Framework"
-                        v-model="framework"
-                >
-                    <option value="null" selected>Select a Framework</option>
-                    <option value="1">Angular</option>
-                    <option value="2">React</option>
-                    <option value="3">Svelte</option>
-                    <option value="4">Vue</option>
-                </select>
-            </p>
-
-            <p>
-                <input type="submit" value="Submit" />
-            </p>
-        </form>
-    </article>
+      <p>
+        <input type="submit" value="Submit" />
+      </p>
+    </form>
+  </article>
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                errors: [],
-                name: null,
-                email: null,
-                framework: null
-            };
-        },
-        methods: {
-            save: function(e) {
-                this.errors = [];
+import { required, minLength, email } from "vuelidate/lib/validators";
 
-                if (!this.name) this.errors.push("Name required.");
-
-                if (!this.email) {
-                    this.errors.push("Email required.");
-                } else if (!this.validEmail(this.email)) {
-                    this.errors.push("Valid email required.");
-                }
-
-                if (!this.errors.length) return true;
-
-                e.preventDefault();
-            },
-            validEmail: function(email) {
-                const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return re.test(email);
-            }
-        }
+export default {
+  name: "FormValidation",
+  data() {
+    return {
+      name: null,
+      email: null,
+      framework: null,
+      submitted: false
     };
+  },
+  validations: {
+    name: {
+      required,
+      min: minLength(4)
+    },
+    email: {
+      required,
+      email
+    }
+  },
+  methods: {
+    handleSubmit: function(e) {
+      this.submitted = true;
+
+      // stop here if form is invalid
+      this.$v.$touch();
+
+      if (this.$v.$invalid) {
+        return;
+      }
+
+      e.preventDefault();
+    }
+  }
+};
 </script>
 
 <styles lang="scss" scoped>
@@ -92,6 +100,17 @@
     min-width: 300px;
     background: lightblue;
     border-radius: 5px;
+    }
+
+    .field + .field {
+    padding-top: 20px;
+    }
+
+    .invalid-feedback {
+    margin-top: .25rem;
+    font-size: 80%;
+    color: #dc3545;
+    padding-left: 100px;
     }
 
     label {
@@ -131,5 +150,6 @@
     border: 0;
     margin-left: 100px;
     border-radius: 5px;
+    cursor: pointer;
     }
 </styles>
