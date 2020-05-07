@@ -91,6 +91,7 @@ export default {
     padding: 20px;
     min-width: 300px;
     background: lightblue;
+    border-radius: 5px;
   }
 
   label {
@@ -110,6 +111,7 @@ export default {
     outline: 0;
     padding: 5px;
     font-size: 1rem;
+    border-radius: 5px;
   }
 
   select {
@@ -128,6 +130,6 @@ export default {
     outline: 0;
     border: 0;
     margin-left: 100px;
-  border-radius: 5px;
+    border-radius: 5px;
   }
 </styles>
